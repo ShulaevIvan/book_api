@@ -1,0 +1,77 @@
+<form 
+    method="POST"
+    action="/update/<%= book.id %>"
+    enctype="multipart/form-data"
+    class="book-form"
+>
+    <div class="book-from-item">
+        <label for="book-item-title">Title</label>
+        <input 
+            id="book-item-title" 
+            name="title" 
+            type="text" 
+            placeholder="title"
+            value=<%= book.title %>
+        />
+    </div>
+    <div class="book-from-item">
+        <label for="book-item-description">Description</label>
+        <input 
+            id="book-item-description"
+            name="description" 
+            type="text" 
+            placeholder="description"
+            value=<%= book.description %>
+        />
+    </div>
+    <div class="book-from-item">
+        <label for="book-item-description">Authors</label>
+        <input 
+            id="book-item-authors" 
+            name="authors"
+            type="text" 
+            placeholder="authors"
+            value=<%= book.authors %>
+        />
+    </div>
+    <div class="book-from-item">
+        <label for="book-item-favorite">Favorite</label>
+        <input 
+            id="book-item-favorite"
+            name="favorite" 
+            type="text" 
+            placeholder="favorite"
+            value=<%= book.favorite %>
+        />
+    </div>
+    <div class="book-from-item">
+        <label for="book-item-fileCover">File Cover</label>
+        <input 
+            id="book-item-fileCover"
+            name="fileCover" 
+            type="text" 
+            placeholder="fileCover"
+            value=<%= book.fileCover %>
+        />
+    </div>
+    <div class="book-from-item">
+        <label for="book-item-filename">File Name</label>
+        <input 
+            id="book-item-filename"
+            name="fileName" 
+            type="text" 
+            placeholder="filename"
+            value=<%= book.fileName %>
+        />
+    </div>
+    <div class="book-from-item file-div">
+        <input 
+            id="book-item-file" 
+            type="file" 
+            name="fileBook" 
+        />
+    </div>
+    <div class="book-from-item">
+        <button type="submit">Submit</button>
+    </div>    
+</form>

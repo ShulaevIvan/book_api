@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<% if (book) { %>
+<%- include ('../includes/head', {'title': `ViewBook id ${book.id}` }) %>
+
+<div class="container">
+    <div class="book-preview">
+        <div class="book-preview-item">
+            <div class="download-wrap">
+                <a href="/<%= book.id %>/download">Download</a>
+            </div>
+
+            <div class="favorite-block">
+                <span>Favorite: <%= book.favorite %></span>
+            </div>
+
+            <div class="book-preview-item-base-info">
+                <ul>
+                    <li>id: <%= book.id %></li>
+                    <li>title: <%= book.title %></li>
+                    <li>authors: <%= book.authors %></li>
+                    <li>file cover: <%= book.fileCover %></li>
+                    <li>views count: <%= book.counter %></li>
+                </ul>
+            </div>
+
+            <div class="book-preview-img-wrap">
+                <img src='/<%= book.fileName %>' alt="test"/>
+            </div>
+            <div class="book-preview-description">
+                <p>Description: <%= book.description %></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<% }%>
+
+<%- include ('../includes/footer') %>

@@ -1,0 +1,225 @@
+
+body {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex: 1 0 auto;
+}
+header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: whitesmoke;
+    position: fixed;
+    top: 0;
+    min-height: 75px;
+}
+.main {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.main-menu {
+    margin: 0;
+    padding: 0;
+}
+nav {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 1230px;
+    width: 100%;
+}
+.main-menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.main-menu li {
+    width: 100px;
+    margin-right: 20px;
+    list-style: none;
+}
+table.base{
+	width: 100%;
+	border-collapse:collapse;
+	border-spacing:0;
+	height: auto;
+    max-width: 1024px;
+}
+table.base,table.base td, table.base th {
+	border: 1px solid #595959;
+}
+table.base td,table.base th {
+	padding: 3px;
+	width: 30px;
+	height: 35px;
+}
+table.base th {
+	background: #347c99; 
+	color: #fff; 
+	font-weight: normal;
+}
+.books-wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    border: 1px solid;
+}
+
+.books-wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1024px;
+    min-width: 400px;
+    border: 1px solid black;
+}
+.books-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.book-item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid;
+    padding: 20px;
+    width: 28%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+.book-img-wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.book-item img {
+    max-width: 100%;
+    width: 250px;
+    height: 250px;
+}
+.book-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.book-controls a {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    margin: 0 10px;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between
+}
+.book-description p {
+    text-align: center;
+    padding: 10px;
+}
+.main {
+    margin-top: 10%;
+}
+.book-preview {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.book-preview-item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid;
+    padding: 20px;
+}
+.book-preview-img-wrap {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.book-preview-img-wrap img {
+    max-width: 100%;
+}
+.book-preview-description {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 400px;
+    padding: 10px;
+}
+.book-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.book-from-item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.file-div{
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+.download-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+footer {
+    min-height: 200px;
+	flex: 0 0 auto;
+    background-color: black;
+    width: 100%;
+    text-align: center;
+    color: white;
+
+}
