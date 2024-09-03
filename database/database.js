@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path'); 
 const mongoose = require('mongoose');
 const { v4: uuid } = require('uuid');
 const bookCollection = require('../models/Book');
@@ -7,6 +8,7 @@ class Database {
     constructor() {
         this.bookStore = undefined;
     }
+
     async connect() {
         try {
             await mongoose.connect(`${process.env.DATABASE_URL}`)
@@ -22,6 +24,7 @@ class Database {
             console.log('connected to db - err');
         }
     }
+
     async getBooks(id, many=true) {
         try {
             if (id && !many) {
@@ -47,9 +50,11 @@ class Database {
             });
         }
         catch(err) {
-            
+            console.log(err);
+            console.log('err to get books');
         }
     }
+
     async createBook(reqData) {
         try {
             return new Promise((resolve, reject) => {
@@ -73,7 +78,8 @@ class Database {
             });
         }
         catch(err) {
-
+            console.log(err);
+            console.log('err to create book');
         }
     }
 
@@ -96,9 +102,11 @@ class Database {
                 bookCollection.find({id: bookId})
                 .then((book) => {
                     if (book && book[0] && book[0].fileName !== `book_holder.png`) {
-                        fs.unlink(`public/uploads/${book[0].fileName}`, err => {
-                            if(err) throw err;
-                        });
+                        if (fs.existsSync(`public/uploads/${book[0].fileName}`)) {
+                            fs.unlink(`public/uploads/${book[0].fileName}`, err => {
+                                if(err) throw err;
+                            });
+                        }
                     }
                     const bookObj = bookCollection.deleteOne({id: bookId});
                     resolve(bookObj);
@@ -107,7 +115,8 @@ class Database {
             });
         }
         catch(err) {
-
+            console.log(err);
+            console.log('err to delete book');
         }
     }
 };

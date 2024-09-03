@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const router = express.Router();
 const database = require('../database/database');
 const uploadMiddleware = require('../middleware/bookFileLoad');
@@ -65,7 +64,7 @@ router.get('/view/:id', async (req, res) => {
 router.get('/update/:id', async (req, res) => {
     try {
         const targetId = req.params.id;
-        const targetBook = await database.getBooks(targetId, many=false)
+        await database.getBooks(targetId, many=false)
         .then((targetBook) => {
             res.render('books/update', { book: targetBook });
         });
@@ -88,25 +87,6 @@ router.post('/update/:id', uploadMiddleware.single('fileBook'), async (req, res)
             res.status(500);
             console.log('err to update (POST) book');
         });
-    }
-    catch(err) {
-        res.send(err);
-    }
-});
-
-router.put('/update/:id', uploadMiddleware.single('fileBook'), async (req, res) => {
-    try {
-
-    }
-    catch(err) {
-        res.send(err);
-    }
-});
-
-
-router.delete('/delete/:id', uploadMiddleware.single('fileBook'), async (req, res) => {
-    try {
-
     }
     catch(err) {
         res.send(err);

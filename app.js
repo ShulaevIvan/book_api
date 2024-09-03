@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const indexRouter = require('./routes/index');
 const booksRouter = require('./routes/books');
+const apiRouter = require('./routes/api');
 const database = require('./database/database');
 
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use(cors());
 database.connect();
 app.use('/', indexRouter);
 app.use('/', booksRouter);
+app.use('/api', apiRouter);
 
 app.listen(PORT);
 console.log(`server started at: \n ${HOST}:${PORT}`);
