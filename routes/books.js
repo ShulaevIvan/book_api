@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const database = require('../database/database');
@@ -54,6 +55,20 @@ router.get('/view/:id', async (req, res) => {
         .then((targetBook) => {
             res.render('books/view', { book: targetBook });
         })
+        .then(() => {
+            fetch(`${process.env.COUNTER_BACKEND_URL}/counter/${targetId}/incr`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data && data.counter) {
+                    database.incrViewCounter(targetId, data.counter);
+                }
+            });
+        });
         
     }
     catch(err) {
@@ -90,6 +105,24 @@ router.post('/update/:id', uploadMiddleware.single('fileBook'), async (req, res)
     }
     catch(err) {
         res.send(err);
+    }
+});
+
+router.get('/:id/download', async (req, res) => {
+    
+    try {
+        const targetId = req.params.id;
+        await database.downloadBookImage(targetId)
+        .then((targetBookImage) => {
+            res.download(targetBookImage);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(404);
+        });
+    }
+    catch(err) {
+        response.send(err);
     }
 });
 

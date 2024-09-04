@@ -1,0 +1,44 @@
+services:
+    node_book_api:
+        image: shulaevivan/book_api
+        hostname: node_book_api
+        working_dir: /app
+        ports:
+            - '3000:3000'
+        environment:
+            - PORT=3000
+            - HOST=localhost
+            - COUNTER_BACKEND_URL=http://node_book_counter:3001
+            - DATABASE_URL=mongodb://mongodbsrv:27017/book_base
+        depends_on:
+            - mongodb_server
+            - node_book_counter
+        networks:
+            - appnet
+        command: npm run start
+
+    mongodb_server:
+        image: mongodb/mongodb-community-server
+        hostname: mongodbsrv
+        working_dir: /app
+        ports:
+          - '27017:27017'
+        networks:
+          - appnet
+
+    node_book_api_counter:
+        image: shulaevivan/book_api_counter
+        hostname: node_book_counter
+        working_dir: /app
+        ports:
+            - '3001:3001'
+        environment:
+            - PORT=3001
+            - HOST=node_book_counter
+        networks:
+            - appnet
+        command: npm run start
+networks:
+    appnet:
+        name: appnet
+        driver: bridge

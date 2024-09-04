@@ -31,6 +31,7 @@ class Database {
                 return new Promise((resolve, reject) => {
                     bookCollection.findOne({id:id})
                     .then((book) => {
+                        console.log(book)
                         if (book) resolve(book);
                     })
                     .catch((err) => {
@@ -117,6 +118,37 @@ class Database {
         catch(err) {
             console.log(err);
             console.log('err to delete book');
+        }
+    }
+
+    async downloadBookImage(bookId) {
+        try {
+            return new Promise((resolve, reject) => {
+                bookCollection.find({id: bookId})
+                .then((data) => {
+                    if (data && data.length > 0) {
+                        const filePath = path.join(__dirname, '..', `/public/uploads/${data[0].fileName}`);
+                        resolve(filePath);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    reject('');
+                })
+            });
+        }
+        catch(err) {
+            console.log(err);
+        }
+    }
+
+    async incrViewCounter(bookId, value) {
+        try {
+            await bookCollection.updateOne({id: bookId}, {counter: value});
+        }
+        catch(err) {
+            console.log(err);
+            console.log('err to set counter value');
         }
     }
 };
