@@ -160,6 +160,7 @@ table.base th {
     width: 100%;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 .book-preview-item {
     display: flex;
@@ -186,6 +187,202 @@ table.base th {
     flex-wrap: wrap;
     max-width: 400px;
     padding: 10px;
+}
+.chat-btn-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+}
+.chat-hide {
+    visibility: hidden;
+}
+.chat-open-btn {
+    cursor: pointer;
+}
+.book-chat-wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 2;
+    background-color: whitesmoke;
+    min-width: 500px;
+    min-height: 570px;
+    padding: 5px 10px;
+    /* right: -15%; */
+    top: 0%;
+}
+.book-chat-close-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    top: 0;
+    min-height: 40px;
+    position: absolute;
+    margin-bottom: 20px;
+}
+.chat-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 95%;
+    justify-content: center;
+    border: 1px solid rgba(173, 216, 230, 0.8);
+    min-height: 350px;
+    margin-bottom: 20px;
+}
+.chat-messages-wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 65%;
+    border-right: 1px solid rgba(173, 216, 230, 0.8);
+}
+.chat-messages {
+    width: 100%;
+    min-height: 300px;
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.chat-message-item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 300px;
+    min-width: 200px;
+    min-height: 40px;
+    margin: 0 5px;
+    border: 1px solid rgba(173, 216, 230, 0.8);
+    background-color: white;
+    margin-bottom: 10px;
+}
+.chat-message-item p,
+.chat-message-username-wrap {
+    padding: 10px;
+    width: 95%;
+}
+.chat-message-from {
+    color: #970F0F;
+}
+.chat-message-to {
+    color: #383838;
+}
+.chat-message-from::after {
+    content: '=>';
+    color: #970F0F;
+    padding: 0 10px;
+}
+.chat-you {
+    color: #90EE90;
+}
+.chat-message-username-wrap,
+.chat-message-text-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: white;
+}
+.chat-users {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 34%;
+    align-items: start
+}
+.user-item-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    cursor: pointer;
+    width: 90%;
+    margin: 0 2px 0 2px;
+    padding: 5px 5px;
+    border: 1px solid rgba(173, 216, 230, 0.8);
+}
+.user-item-selected {
+    background-color: #347c99;
+    color: #90EE90;
+}
+.user-item-you {
+    color: #970F0F;
+}
+.chat-keyboard-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.chat-keyboard {
+    width: 78.3%;
+    padding: 5px;
+    outline: none;
+    border: 1px solid rgba(173, 216, 230, 0.8);
+    min-height: 40px;
+}
+#register-name-input {
+    border: 1px solid rgba(173, 216, 230, 0.8);
+}
+#register-name-input:focus {
+    outline: none;
+}
+.chat-keyboard-send-btn{
+    width: 15%;
+    min-height: 52px;
+    min-width: 40px;
+    outline: none;
+    border: 1px solid rgba(173, 216, 230, 0.8);
+    cursor: pointer;
+    background-color: #90EE90;
+}
+.register-user-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.register-user-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.register-select-btn,
+.register-clear-btn {
+    margin-right: 10px;
+    cursor: pointer;
+}
+.register-select-btn {
+    margin-left: 10px;
+}
+.register-exit-btn {
+    cursor: pointer;
+}
+.chat-column-title {
+    width: 100%;
+    color: #383838;
+    padding: 0 10px;
+}
+.book-chat-close-btn::before {
+    position: absolute;
+    right: 2.5%;
+    top: 10%;
+    content: '\1F5D9';
+    cursor: pointer;
+    font-size: 22px;
 }
 .book-form {
     display: flex;
@@ -214,6 +411,7 @@ table.base th {
     justify-content: center;
     align-items: center;
 }
+
 footer {
     min-height: 200px;
 	flex: 0 0 auto;
