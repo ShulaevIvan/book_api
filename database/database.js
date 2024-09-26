@@ -31,7 +31,6 @@ class Database {
                 return new Promise((resolve, reject) => {
                     bookCollection.findOne({id:id})
                     .then((book) => {
-                        console.log(book)
                         if (book) resolve(book);
                     })
                     .catch((err) => {

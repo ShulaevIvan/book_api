@@ -53,7 +53,7 @@ router.get('/view/:id', async (req, res) => {
         const targetId = req.params.id;
         await database.getBooks(targetId, many=false)
         .then((targetBook) => {
-            res.render('books/view', { book: targetBook });
+            res.render('books/view', { book: targetBook, io: true });
         })
         .then(() => {
             fetch(`${process.env.COUNTER_BACKEND_URL}/counter/${targetId}/incr`, {
@@ -66,6 +66,7 @@ router.get('/view/:id', async (req, res) => {
             .then((data) => {
                 if (data && data.counter) {
                     database.incrViewCounter(targetId, data.counter);
+                    
                 }
             });
         });
