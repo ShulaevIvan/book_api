@@ -5,6 +5,7 @@ io.on('connection', (socket) => {
     const clientId = socket.id;
     console.log(`New websocket connected ${clientId}`);
     io.sockets.emit('checkusers', {users: clients});
+    socket.emit('getUserId', { userId: clientId });
 
     socket.on('logout', (msg) => {
         Array.from(io.sockets.sockets).forEach((socketItem) => socketItem[0] === msg.id ? socket.disconnect() : null);
