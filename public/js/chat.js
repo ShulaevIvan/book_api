@@ -8,23 +8,42 @@ window.addEventListener('DOMContentLoaded', () => {
         socketEvents: [
             {
                 name: 'checkusers', 
-                func: (msg) => {
-                    this.allUsersInChat = [...msg.users]
-                    console.log(this.allUsersInChat)
+                func: async (msg) => {
+                    console.log('check users event')
+                    appData.allUsersInChat = [...msg.users]
+                    clearUsersInChat();
+                    appData.allUsersInChat.forEach((userItem) => {
+                        addUserItemToChat(userItem.username, userItem.chatId); 
+                    });
+                    addUserItemToChat(appData.currentUser.username, appData.currentUser.userId , true); 
                 }
             },
             {
                 name: 'getUserId',
                 func: (msg) => {
                     appData.currentUser.userId = msg.userId;
-                    addUserItemToChat(appData.currentUser.username, appData.currentUser.userId);
+                    appData.currentUser.username = msg.username;
+                }
+            },
+            {
+                name: 'login',
+                func: (msg) => {
+                    console.log('login');
+                    console.log(msg)
+                }
+            },
+            {
+                name: 'logout',
+                func: (msg) => {
+                    console.log('logout');
+                    console.log(msg)
                 }
             }
         ],
     }
     const chatBtn = document.querySelector('.chat-open-btn');
     const chatWrap = document.querySelector('.book-chat-wrap');
-    const usersColumnWrap = chatWrap.querySelector('.chat-users');
+    const usersColumnWrap = chatWrap.querySelector('.chat-users-column');
     const closeChatPopup = chatWrap.querySelector('.book-chat-close-btn');
     const registerNameInput = chatWrap.querySelector('#register-name-input');
     const registerSelectBtn = chatWrap.querySelector('.register-select-btn');
@@ -48,20 +67,26 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const addUserItemToChat = (username, userId) => {
+    const addUserItemToChat = (username, userId, you=false) => {
+
         const userItemWrap = document.createElement('div');
         userItemWrap.classList.add('user-item-wrap');
         userItemWrap.setAttribute('userId', userId);
         userItemWrap.textContent = username;
-        userItemWrap.classList.add(appData.currentUser.userId === userId ? 'user-item-you' : null);
         userItemWrap.addEventListener('click', selectChatUserHandler);
+        if (you) {
+            userItemWrap.classList.add('user-item-you');
+            const firstNode = usersColumnWrap.childNodes[0];
+            usersColumnWrap.insertBefore(userItemWrap, firstNode);
+            return;
+        }
         usersColumnWrap.appendChild(userItemWrap);
+        
+        
     };
 
-    const removeUserItemFromChat = (userId) => {
-        const targetUser = usersColumnWrap.querySelector(`[userId="${userId}"]`);
-        targetUser.removeEventListener('click', selectChatUserHandler);
-        targetUser.remove();
+    const clearUsersInChat = () => {
+        usersColumnWrap.querySelectorAll('.user-item-wrap').forEach((item) => item.remove());
     };
 
     const selectChatUserHandler = (e) => {
@@ -80,6 +105,7 @@ window.addEventListener('DOMContentLoaded', () => {
             sendToChatBtn.setAttribute('disabled', true);
             registerSelectBtn.removeAttribute('disabled');
             registerNameInput.removeAttribute('disabled');
+            // removeUserItemFromChat(appData.currentUser.userId);
             return;
         }
         registerNameInput.setAttribute('disabled', true);
@@ -97,7 +123,8 @@ window.addEventListener('DOMContentLoaded', () => {
         registerNameInput.value = '';
         registerDisabledBtns('clearBtn');
         sendEmit('logout');
-        removeUserItemFromChat(appData.currentUser.userId);
+        clearUsersInChat();
+        appData.allUsersInChat = [];
         removeSocketEvents();
     })
 
@@ -106,8 +133,9 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!registerNameInput.value) return;
         registerDisabledBtns();
         appData.currentUser.username = registerNameInput.value;
-        socket = io(wsServer);
+        socket = io(wsServer, { query: `username=${registerNameInput.value}` });
         addSocketEvents();
+        registerNameInput.value = '';
     });
 
 
@@ -119,12 +147,11 @@ window.addEventListener('DOMContentLoaded', () => {
             chatWrap.classList.remove('chat-hide');
             return;
         }
+        registerClearBtn.click();
         chatWrap.classList.add('chat-hide');
     };
 
     chatBtn.addEventListener('click', (e) => chatOpenHandler(e, chatWrap.classList.contains('chat-hide') ? 'open' : 'close'));
     closeChatPopup.addEventListener('click', (e) => chatOpenHandler(e, 'close'));
-
-
     
 });
