@@ -10,6 +10,6 @@ const chatUser = mongoose.Schema({
     },
     online: {
         type: Boolean,
-    }
+    },
 })
 module.exports = mongoose.model('chatUsers', chatUser);

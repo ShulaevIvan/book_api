@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 const socketIO = require('socket.io');
 const env = require('dotenv').config();
@@ -30,6 +31,6 @@ database.connect();
 app.use('/', indexRouter);
 app.use('/', booksRouter);
 app.use('/api', apiRouter);
-
+mongoose.connection.collection('chatusers').drop()
 server.listen(PORT);
 console.log(`server started at: \n ${HOST}:${PORT}`);

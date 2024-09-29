@@ -7,36 +7,35 @@ window.addEventListener('DOMContentLoaded', () => {
         allUsersInChat: [],
         socketEvents: [
             {
-                name: 'checkusers', 
-                func: async (msg) => {
-                    console.log('check users event')
-                    appData.allUsersInChat = [...msg.users]
-                    clearUsersInChat();
-                    appData.allUsersInChat.forEach((userItem) => {
-                        addUserItemToChat(userItem.username, userItem.chatId); 
-                    });
-                    addUserItemToChat(appData.currentUser.username, appData.currentUser.userId , true); 
-                }
-            },
-            {
-                name: 'getUserId',
-                func: (msg) => {
-                    appData.currentUser.userId = msg.userId;
-                    appData.currentUser.username = msg.username;
-                }
-            },
-            {
                 name: 'login',
-                func: (msg) => {
-                    console.log('login');
-                    console.log(msg)
+                func: async (msg) => {
+                    return new Promise((resolve, reject) => {
+                        console.log('login');
+                        resolve(clearUsersInChat())
+                    })
+                    .then(() => {
+                        appData.allUsersInChat = [...msg.users];
+                        appData.allUsersInChat.forEach((userItem) => {
+                            const you = userItem.chatId === socket.id ? true : false
+                            addUserItemToChat(userItem.username, userItem.chatId, you);
+                        });
+                    });
                 }
             },
             {
                 name: 'logout',
-                func: (msg) => {
-                    console.log('logout');
-                    console.log(msg)
+                func: async (msg) => {
+                    return new Promise((resolve, reject) => {
+                        console.log('logout');
+                        resolve(clearUsersInChat())   
+                    })
+                    .then(() => {
+                        appData.allUsersInChat = [...msg.users];
+                        appData.allUsersInChat.forEach((userItem) => {
+                            const you = userItem.chatId === socket.id ? true : false
+                            addUserItemToChat(userItem.username, userItem.chatId, you);
+                        });
+                    });
                 }
             }
         ],
@@ -62,7 +61,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const sendEmit = (event, data={}) => {
         socket.emit(event, {
             id: socket.id,
-            userName: appData.currentUser.username,
             data: data,
         });
     };
@@ -87,6 +85,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const clearUsersInChat = () => {
         usersColumnWrap.querySelectorAll('.user-item-wrap').forEach((item) => item.remove());
+        console.log(usersColumnWrap.querySelectorAll('.user-item-wrap'))
     };
 
     const selectChatUserHandler = (e) => {
@@ -105,7 +104,6 @@ window.addEventListener('DOMContentLoaded', () => {
             sendToChatBtn.setAttribute('disabled', true);
             registerSelectBtn.removeAttribute('disabled');
             registerNameInput.removeAttribute('disabled');
-            // removeUserItemFromChat(appData.currentUser.userId);
             return;
         }
         registerNameInput.setAttribute('disabled', true);
@@ -122,11 +120,12 @@ window.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         registerNameInput.value = '';
         registerDisabledBtns('clearBtn');
-        sendEmit('logout');
-        clearUsersInChat();
+        sendEmit('logout', {userName: appData.currentUser.username, userId: socket.id});
         appData.allUsersInChat = [];
         removeSocketEvents();
-    })
+        clearUsersInChat();
+        
+    });
 
     registerSelectBtn.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -134,8 +133,8 @@ window.addEventListener('DOMContentLoaded', () => {
         registerDisabledBtns();
         appData.currentUser.username = registerNameInput.value;
         socket = io(wsServer, { query: `username=${registerNameInput.value}` });
+        appData.currentUser.chatId = socket.id;
         addSocketEvents();
-        registerNameInput.value = '';
     });
 
 
