@@ -3,7 +3,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!/^\/view\/\S+\/$/.test(`${window.location.pathname}/`)) return;
     const wsServer = 'http://localhost:3000';
     const appData = {
-        currentUser: {username: '', userId: null, inChat: false},
+        currentUser: {username: '', userId: null},
+        selectedUser: {username: '', userId: null},
         allUsersInChat: [],
         socketEvents: [
             {
@@ -16,9 +17,10 @@ window.addEventListener('DOMContentLoaded', () => {
                     .then(() => {
                         appData.allUsersInChat = [...msg.users];
                         appData.allUsersInChat.forEach((userItem) => {
-                            const you = userItem.chatId === socket.id ? true : false
+                            const you = userItem.chatId === socket.id ? true : false;
                             addUserItemToChat(userItem.username, userItem.chatId, you);
                         });
+                        appData.currentUser.userId = socket.id;
                     });
                 }
             },
@@ -35,7 +37,26 @@ window.addEventListener('DOMContentLoaded', () => {
                             const you = userItem.chatId === socket.id ? true : false
                             addUserItemToChat(userItem.username, userItem.chatId, you);
                         });
+                        appData.currentUser.userId = '';
                     });
+                }
+            },
+            {
+                name: 'message',
+                func: async (msg) => {
+                    if (msg && msg.data) {
+                        const { fromUser, toUser, text, fromUsername, toUsername, time } = msg.data;
+                        await createMessage(
+                            fromUsername ? fromUsername : fromUser, 
+                            toUsername ? toUsername : toUser, 
+                            text,
+                            fromUser,
+                            time
+                        )
+                        .then((messageItem) => {
+                            chatMessagesColumn.appendChild(messageItem);
+                        })
+                    } 
                 }
             }
         ],
@@ -49,6 +70,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const registerClearBtn = chatWrap.querySelector('.register-clear-btn');
     const mainChatKeyboard = chatWrap.querySelector('.chat-keyboard');
     const sendToChatBtn = chatWrap.querySelector('.chat-keyboard-send-btn');
+    const chatMessagesColumn = chatWrap.querySelector('.chat-messages');
 
     const addSocketEvents = () => {
         appData.socketEvents.forEach((event) => socket.on(event.name, event.func));
@@ -65,8 +87,52 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const addUserItemToChat = (username, userId, you=false) => {
+    const sendMessageToChat = (fromUser, to) => {
+        sendEmit('message', {
+            fromUser: fromUser,
+            toUser: to,
+            text: mainChatKeyboard.value,
+        });
+    };
 
+    const createMessage = (fromUser, toUser, text, fromUserId, time) => {
+        return new Promise((resolve, reject) => {
+            const you = appData.currentUser.userId === fromUserId ? true : false;
+            const chatMessageItem = document.createElement('div');
+            const chatUsernameWrap = document.createElement('div');
+            const chatMessageFrom = document.createElement('span');
+            const chatMessageTo = document.createElement('span');
+            const chatText = document.createElement('p');
+            const chatMessageTime = document.createElement('div');
+        
+            chatMessageFrom.classList.add('chat-message-from');
+            chatMessageTime.classList.add('chat-message-time');
+
+            if (toUser === appData.currentUser.username) chatMessageTo.classList.add('chat-message-color-you');
+            else chatMessageTo.classList.add('chat-message-color');
+
+            chatMessageItem.classList.add('chat-message-item');
+            chatUsernameWrap.classList.add('chat-message-username-wrap');
+
+            chatMessageFrom.textContent = fromUser;
+            chatMessageTo.textContent = toUser;
+            chatText.textContent = text;
+            chatMessageTime.textContent = time;
+
+            if (you) chatMessageFrom.classList.add('chat-message-color-you');
+            else chatMessageFrom.classList.add('chat-message-color');
+
+            chatUsernameWrap.appendChild(chatMessageFrom);
+            chatUsernameWrap.appendChild(chatMessageTo);
+            chatMessageItem.appendChild(chatMessageTime)
+            chatMessageItem.appendChild(chatUsernameWrap);
+            chatMessageItem.appendChild(chatText);
+
+            resolve(chatMessageItem);
+        });
+    };
+
+    const addUserItemToChat = (username, userId, you=false) => {
         const userItemWrap = document.createElement('div');
         userItemWrap.classList.add('user-item-wrap');
         userItemWrap.setAttribute('userId', userId);
@@ -79,23 +145,26 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
         }
         usersColumnWrap.appendChild(userItemWrap);
-        
-        
     };
 
     const clearUsersInChat = () => {
         usersColumnWrap.querySelectorAll('.user-item-wrap').forEach((item) => item.remove());
-        console.log(usersColumnWrap.querySelectorAll('.user-item-wrap'))
+        console.log(usersColumnWrap.querySelectorAll('.user-item-wrap'));
     };
 
     const selectChatUserHandler = (e) => {
         e.preventDefault();
         const targetUser = e.target;
+
         if (targetUser.classList.contains('user-item-selected')) {
             targetUser.classList.remove('user-item-selected');
+            appData.selectedUser.userId = '';
+            appData.selectedUser.username = '';
             return;
         }
-        targetUser.classList.add('user-item-selected')
+        targetUser.classList.add('user-item-selected');
+        appData.selectedUser.userId = targetUser.getAttribute('userId');
+        appData.selectedUser.username = targetUser.textContent;
     };
 
     const registerDisabledBtns = (param) => {
@@ -112,6 +181,17 @@ window.addEventListener('DOMContentLoaded', () => {
         sendToChatBtn.removeAttribute('disabled');
     };
 
+    sendToChatBtn.addEventListener('click', (e) => {
+        if (!mainChatKeyboard.value) return;
+        if (appData.currentUser.userId && appData.selectedUser.userId) {
+            sendMessageToChat(appData.currentUser.userId, appData.selectedUser.userId);
+            mainChatKeyboard.value = '';
+            return;
+        }
+        sendMessageToChat(appData.currentUser.userId, 'all');
+        mainChatKeyboard.value = '';
+    });
+
     registerNameInput.addEventListener('input', (e) => {
         appData.currentUser.username = e.target.value;
     });
@@ -124,6 +204,7 @@ window.addEventListener('DOMContentLoaded', () => {
         appData.allUsersInChat = [];
         removeSocketEvents();
         clearUsersInChat();
+        mainChatKeyboard.value = '';
         
     });
 
@@ -133,7 +214,7 @@ window.addEventListener('DOMContentLoaded', () => {
         registerDisabledBtns();
         appData.currentUser.username = registerNameInput.value;
         socket = io(wsServer, { query: `username=${registerNameInput.value}` });
-        appData.currentUser.chatId = socket.id;
+        appData.currentUser.userId = socket.id;
         addSocketEvents();
     });
 

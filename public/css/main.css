@@ -260,6 +260,7 @@ table.base th {
     margin: 0 5px;
     border: 1px solid rgba(173, 216, 230, 0.8);
     background-color: white;
+    overflow-x: hidden;
     margin-bottom: 10px;
 }
 .chat-message-item p,
@@ -268,18 +269,29 @@ table.base th {
     width: 95%;
 }
 .chat-message-from {
-    color: #970F0F;
+    color:  #383838;
 }
 .chat-message-to {
     color: #383838;
 }
+.chat-message-color-you {
+    color: #970F0F;
+}
+.chat-message-color {
+    color: #9C27B0;
+}
 .chat-message-from::after {
     content: '=>';
-    color: #970F0F;
+    color: #023d05;
     padding: 0 10px;
 }
-.chat-you {
-    color: #90EE90;
+.chat-message-time {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
 }
 .chat-message-username-wrap,
 .chat-message-text-wrap {
@@ -287,6 +299,7 @@ table.base th {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+    padding: 0 10px;
     background-color: white;
 }
 .chat-users {
