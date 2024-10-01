@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 func: async (msg) => {
                     return new Promise((resolve, reject) => {
                         console.log('login');
-                        resolve(clearUsersInChat())
+                        resolve(clearUsersInChat());
                     })
                     .then(() => {
                         appData.allUsersInChat = [...msg.users];
@@ -29,7 +29,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 func: async (msg) => {
                     return new Promise((resolve, reject) => {
                         console.log('logout');
-                        resolve(clearUsersInChat())   
                     })
                     .then(() => {
                         appData.allUsersInChat = [...msg.users];
@@ -55,8 +54,16 @@ window.addEventListener('DOMContentLoaded', () => {
                         )
                         .then((messageItem) => {
                             chatMessagesColumn.appendChild(messageItem);
-                        })
+                            chatMessagesColumn.scrollTop = chatMessagesColumn.scrollHeight;
+                        });
                     } 
+                }
+            },
+            {
+                name: 'history',
+                func: async (msg) => {
+                    console.log(msg)
+                    // loadHistoryMsg(msg.messages);
                 }
             }
         ],
@@ -93,6 +100,13 @@ window.addEventListener('DOMContentLoaded', () => {
             toUser: to,
             text: mainChatKeyboard.value,
         });
+    };
+
+    const clearMessages = () => {
+        const allMesgItems = chatWrap.querySelectorAll('.chat-message-item');
+        console.log(allMesgItems)
+        allMesgItems.forEach((item) => item.remove());
+
     };
 
     const createMessage = (fromUser, toUser, text, fromUserId, time) => {
@@ -149,7 +163,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const clearUsersInChat = () => {
         usersColumnWrap.querySelectorAll('.user-item-wrap').forEach((item) => item.remove());
-        console.log(usersColumnWrap.querySelectorAll('.user-item-wrap'));
+    };
+
+    const loadHistoryMsg = async (msgData) => {
+        msgData.forEach((msgItem) => {
+            console.log(msgData);
+        });
+    };
+
+    const sendMessageToChatHandler = (e) => {
+        if (!mainChatKeyboard.value.trim()) return;
+        if (e.key && e.key !== 'Enter') return;
+        if (appData.currentUser.userId && appData.selectedUser.userId) {
+            sendMessageToChat(appData.currentUser.userId, appData.selectedUser.userId);
+            mainChatKeyboard.blur();
+            mainChatKeyboard.value = '';
+            return;
+        }
+        sendMessageToChat(appData.currentUser.userId, 'all');
+        mainChatKeyboard.blur();
+        mainChatKeyboard.value = '';
     };
 
     const selectChatUserHandler = (e) => {
@@ -181,16 +214,8 @@ window.addEventListener('DOMContentLoaded', () => {
         sendToChatBtn.removeAttribute('disabled');
     };
 
-    sendToChatBtn.addEventListener('click', (e) => {
-        if (!mainChatKeyboard.value) return;
-        if (appData.currentUser.userId && appData.selectedUser.userId) {
-            sendMessageToChat(appData.currentUser.userId, appData.selectedUser.userId);
-            mainChatKeyboard.value = '';
-            return;
-        }
-        sendMessageToChat(appData.currentUser.userId, 'all');
-        mainChatKeyboard.value = '';
-    });
+    sendToChatBtn.addEventListener('click', sendMessageToChatHandler);
+    mainChatKeyboard.addEventListener('keydown', sendMessageToChatHandler);
 
     registerNameInput.addEventListener('input', (e) => {
         appData.currentUser.username = e.target.value;
@@ -204,8 +229,8 @@ window.addEventListener('DOMContentLoaded', () => {
         appData.allUsersInChat = [];
         removeSocketEvents();
         clearUsersInChat();
+        // clearMessages();
         mainChatKeyboard.value = '';
-        
     });
 
     registerSelectBtn.addEventListener('click', async (e) => {

@@ -32,5 +32,6 @@ app.use('/', indexRouter);
 app.use('/', booksRouter);
 app.use('/api', apiRouter);
 mongoose.connection.collection('chatusers').drop()
+// mongoose.connection.collection('chatmessages').drop()
 server.listen(PORT);
 console.log(`server started at: \n ${HOST}:${PORT}`);
