@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             addUserItemToChat(userItem.username, userItem.chatId, you);
                         });
                         appData.currentUser.userId = socket.id;
+                        chatMessagesColumn.scrollTop = chatMessagesColumn.scrollHeight;
                     });
                 }
             },
@@ -31,11 +32,8 @@ window.addEventListener('DOMContentLoaded', () => {
                         console.log('logout');
                     })
                     .then(() => {
-                        appData.allUsersInChat = [...msg.users];
-                        appData.allUsersInChat.forEach((userItem) => {
-                            const you = userItem.chatId === socket.id ? true : false
-                            addUserItemToChat(userItem.username, userItem.chatId, you);
-                        });
+                        appData.selectedUser.username = '';
+                        appData.selectedUser.userId = null;
                         appData.currentUser.userId = '';
                     });
                 }
@@ -62,8 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
             {
                 name: 'history',
                 func: async (msg) => {
-                    console.log(msg)
-                    // loadHistoryMsg(msg.messages);
+                    await loadHistoryMsg(msg)
                 }
             }
         ],
@@ -95,7 +92,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     const sendMessageToChat = (fromUser, to) => {
-        sendEmit('message', {
+        return sendEmit('message', {
             fromUser: fromUser,
             toUser: to,
             text: mainChatKeyboard.value,
@@ -104,7 +101,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const clearMessages = () => {
         const allMesgItems = chatWrap.querySelectorAll('.chat-message-item');
-        console.log(allMesgItems)
         allMesgItems.forEach((item) => item.remove());
 
     };
@@ -141,7 +137,6 @@ window.addEventListener('DOMContentLoaded', () => {
             chatMessageItem.appendChild(chatMessageTime)
             chatMessageItem.appendChild(chatUsernameWrap);
             chatMessageItem.appendChild(chatText);
-
             resolve(chatMessageItem);
         });
     };
@@ -166,9 +161,22 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadHistoryMsg = async (msgData) => {
-        msgData.forEach((msgItem) => {
-            console.log(msgData);
-        });
+        if (msgData && msgData.length > 0) {
+            msgData.forEach((msgItem) => {
+                createMessage(
+                    msgItem.fromUserName, 
+                    msgItem.toUserName, 
+                    msgItem.message, 
+                    msgItem.fromUserId, 
+                    msgItem.time
+                )
+                .then((msgData) => {
+                    chatMessagesColumn.appendChild(msgData);
+                    chatMessagesColumn.scrollTop = chatMessagesColumn.scrollHeight;
+                });
+            });
+        }
+        return;  
     };
 
     const sendMessageToChatHandler = (e) => {
@@ -229,7 +237,7 @@ window.addEventListener('DOMContentLoaded', () => {
         appData.allUsersInChat = [];
         removeSocketEvents();
         clearUsersInChat();
-        // clearMessages();
+        clearMessages();
         mainChatKeyboard.value = '';
     });
 

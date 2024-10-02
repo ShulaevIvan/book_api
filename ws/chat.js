@@ -10,9 +10,8 @@ io.on('connection', async (socket) => {
     console.log('connection add ' + clientId);
     await getAllMessages()
     .then((data) => {
-      console.log(data)
-      const onlyAllMsg = data.filter((msg) => msg.toUser === 'all' || msg.toUser === 'all');
-      socket.emit('history', {messages: data});
+      const onlyAllMsg = data.filter((msg) => msg.toUserId === 'all');
+      socket.emit('history', onlyAllMsg);
     });
 
 
@@ -42,21 +41,25 @@ io.on('connection', async (socket) => {
     socket.on('message', async (msg) => {
       return new Promise((resolve, reject) => {
         const { fromUser, toUser, text } = msg.data;
-        const msgTime = getTime();
+        const date = new Date();
+        const msgTime = getTime(date);
         if (toUser && toUser === 'all') {
           ChatUser.find({chatId: fromUser})
-          .then((data) => {
-            if (data && data.length > 0) {
-              msg.data.fromUsername = data[0].username;
+          .then((fromUserData) => {
+            if (fromUserData && fromUserData.length > 0) {
+              const fromUsername = fromUserData[0].username;
+              msg.data.fromUsername = fromUsername;
               msg.data.time = msgTime;
               ChatMessage.create({
                 message: text,
-                date: msgTime,
+                time: msgTime,
+                date: date,
                 fromUserId: fromUser,
                 toUserId: toUser,
-                fromUserName: ChatUser.find({chatId: fromUser}).userName,
-                toUserName: toUser !== 'all' ? ChatUser.find({chatId: toUser}).userName : 'all'
-              })
+                fromUserName: fromUsername,
+                toUserName: toUser !== 'all' ? ChatUser.find({chatId: toUser})[0].username : 'all'
+              });
+
               resolve(io.sockets.emit('message', msg));
             }
           })
@@ -66,7 +69,6 @@ io.on('connection', async (socket) => {
           .then((fromUserData) => {
             if (fromUserData && fromUserData.length > 0) {
               msg.data.fromUsername = fromUserData[0].username;
-              resolve(fromUserData);
             }
           })
           .then((data) => {
@@ -75,20 +77,24 @@ io.on('connection', async (socket) => {
               if (toUserData && toUserData.length > 0) {
                 const senderUserId = msg.data.fromUser;
                 const reciveUserId = msg.data.toUser;
-                console.log(msg.data)
+
                 msg.data.toUser = toUserData[0].username;
                 msg.data.time = msgTime;
                 ChatMessage.create({
                   message: text,
-                  date: msgTime,
+                  time: msgTime,
+                  date: date,
                   fromUserId: fromUser,
                   toUserId: toUser,
-                  fromUserName: toUserData[0].username,
-                  toUserName: toUser !== 'all' ? ChatUser.find({chatId: toUser}).userName : 'all'
-                })
+                  fromUserName: msg.data.fromUsername,
+                  toUserName: toUser !== 'all' ? toUserData[0].username : 'all'
+                });
+                if (senderUserId === reciveUserId) {
+                  socket.emit('message', msg);
+                  return;
+                }
                 socket.emit('message', msg);
                 io.to(reciveUserId).emit('message', msg);
-                resolve();
               }
             });
           });
@@ -121,12 +127,12 @@ const removeUser = async (userId) => {
   await ChatUser.deleteOne({chatId: userId});
 };
 
-const getTime = () => {
+const getTime = (date) => {
   const addZero = (value) => {
     if (value <= 9) return `0${value}`;
     return `${value}`;
   };
-  const date = new Date();
+
   const time = `Time: ${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`
   const today = `Date: ${addZero(date.getDay())} / ${addZero(date.getMonth())} / ${addZero(date.getFullYear())}`;
 

@@ -5,8 +5,12 @@ const chatMessage = mongoose.Schema({
         type: String,
         required: true,
     },
-    date: {
+    time: {
         type: String,
+        required: true
+    },
+    date: {
+        type: Date,
         required: true
     },
     fromUserId: {
